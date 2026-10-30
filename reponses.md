@@ -41,3 +41,37 @@ Il contient les instructions SQL qui décrivent la structure de la base : les `C
 **Q1.8.** Pourquoi faut-il fermer la base avant qu'un autre programme écrive dans le même fichier ?
 
 Un fichier SQLite ne doit pas être modifié par deux programmes en même temps. Si DB Browser garde la base ouverte avec des modifications non enregistrées, il peut verrouiller le fichier : l'application reçoit alors une erreur du type « database is locked ». De plus, chaque programme peut voir un état différent de la base, ce qui risque de produire des données incohérentes ou de perdre des modifications. Fermer la base (ou enregistrer puis fermer) garantit que le fichier est dans un état stable.
+
+
+# Q3.2 – Comprendre DatabaseHelper
+
+### 1. Pourquoi utiliser le pattern Singleton ?
+
+Le pattern Singleton garantit qu'une seule instance de DatabaseHelper existe dans toute l'application.
+
+Cela permet d'éviter la création de plusieurs connexions à la base de données et de centraliser les opérations SQLite.
+
+### 2. Quel est le rôle du constructeur factory ?
+
+Le constructeur factory permet de retourner toujours la même instance de DatabaseHelper.
+
+Il empêche la création de nouvelles instances à chaque appel.
+
+### 3. Quelle est la différence entre onCreate et onUpgrade ?
+
+- onCreate : est exécutée lorsque la base de données est créée pour la première fois. Elle permet de créer les tables.
+- onUpgrade : est exécutée lorsque la version de la base de données augmente. Elle permet de modifier la structure de la base de données.
+
+### 4. Pourquoi activer les clés étrangères ?
+
+Les clés étrangères permettent de garantir l'intégrité référentielle entre les tables.
+
+Par exemple, chaque produit doit appartenir à une catégorie existante. Cela évite les références vers des catégories inexistantes.
+
+### Q3.5. Pourquoi onCreate ne s'affiche-t-il plus ?
+
+Non, le message onCreate ne s'affiche plus après le redémarrage de l'application.
+
+La méthode onCreate est appelée uniquement lors de la première création de la base de données.
+
+Lors des lancements suivants, Flutter réutilise la base SQLite déjà existante.

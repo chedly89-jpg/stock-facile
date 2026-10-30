@@ -1,17 +1,23 @@
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import 'screens/tests_screens.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   // Windows / Linux : SQLite passe par FFI
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
+
   runApp(const StockFacileApp());
 }
+
 class StockFacileApp extends StatelessWidget {
   const StockFacileApp({super.key});
 
@@ -22,25 +28,11 @@ class StockFacileApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+        ),
       ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('StockFacile'),
-      ),
-      body: const Center(
-        child: Text('Bienvenue dans StockFacile'),
-      ),
+      home: const TestsScreen(),
     );
   }
 }
