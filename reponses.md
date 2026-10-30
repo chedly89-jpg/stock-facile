@@ -75,3 +75,16 @@ Non, le message onCreate ne s'affiche plus après le redémarrage de l'applicati
 La méthode onCreate est appelée uniquement lors de la première création de la base de données.
 
 Lors des lancements suivants, Flutter réutilise la base SQLite déjà existante.
+**Q4.9**
+
+- `disponible` est stocké sous forme d'un entier : `1` pour vrai et `0` pour faux.
+- `date_ajout` est stocké sous forme de texte au format ISO 8601.
+- Oui, ces valeurs sont conformes à la méthode `toMap()` de la classe `Produit`.
+
+**Q4.10**
+
+L'insertion d'un produit avec un `categorie_id` inexistant doit être refusée par SQLite grâce à la contrainte de clé étrangère (`FOREIGN KEY`). Cela garantit l'intégrité référentielle entre les tables `produits` et `categories`.
+**Q4.11**
+
+1. La contrainte `CHECK (prix >= 0)` bloque l'insertion d'un produit dont le prix est négatif.
+2. Il est utile de vérifier également le prix dans le formulaire Flutter pour informer immédiatement l'utilisateur et éviter d'envoyer une donnée invalide à la base de données.

@@ -20,3 +20,15 @@ GROUP BY c.nom;
 
 -- Q1.5.6 : valeur totale du stock
 SELECT SUM(prix * quantite) AS valeur_stock FROM produits;
+
+-- Q4.1 : Insertion d'une catégorie
+INSERT INTO categories (nom, description)
+VALUES ('Électroménager', 'Petits appareils');
+-- Q4.6 : Insertion du produit Stylo bleu
+INSERT INTO produits (
+    nom, prix, quantite, disponible, date_ajout, categorie_id
+)
+VALUES (
+    'Stylo bleu', 0.500, 100, 1,
+    '2026-10-30T15:00:00', 4
+);
