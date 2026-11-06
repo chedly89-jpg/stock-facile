@@ -88,3 +88,6 @@ L'insertion d'un produit avec un `categorie_id` inexistant doit être refusée p
 
 1. La contrainte `CHECK (prix >= 0)` bloque l'insertion d'un produit dont le prix est négatif.
 2. Il est utile de vérifier également le prix dans le formulaire Flutter pour informer immédiatement l'utilisateur et éviter d'envoyer une donnée invalide à la base de données.
+**Q5.4**
+
+La méthode `obtenirProduitParId(int id)` permet de rechercher un produit à partir de son identifiant. Elle retourne un objet `Produit` si le produit existe, sinon elle retourne `null`.

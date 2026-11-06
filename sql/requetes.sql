@@ -32,3 +32,11 @@ VALUES (
     'Stylo bleu', 0.500, 100, 1,
     '2026-10-30T15:00:00', 4
 );
+-- Q5.1.1
+SELECT *
+FROM produits
+ORDER BY nom ASC;
+-- Q5.1.2
+SELECT *
+FROM produits
+WHERE id = 3;

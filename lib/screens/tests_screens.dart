@@ -1,11 +1,13 @@
-
 import 'package:flutter/material.dart';
+
+import 'package:sqflite/sqflite.dart';
 
 import '../database/database_helper.dart';
 import '../database/categorie_dao.dart';
 import '../database/produit_dao.dart';
 import '../models/categorie.dart';
 import '../models/produit.dart';
+import 'produits_screen.dart';
 
 class TestsScreen extends StatelessWidget {
   const TestsScreen({super.key});
@@ -26,17 +28,24 @@ class TestsScreen extends StatelessWidget {
   }
 
   // Ajouter une catégorie
-  Future<void> testerCategorie() async {
+  Future<void> testerCategorie(BuildContext context) async {
     final categorie = Categorie(
-      nom: 'Papeterie test',
-      description: 'Articles de bureau',
+      nom: 'Électroménager',
+      description: 'Petits appareils',
     );
 
     try {
       final id = await CategorieDao().insererCategorie(categorie);
-      debugPrint('Catégorie insérée avec ID : $id');
-    } catch (e) {
-      debugPrint('Erreur catégorie : $e');
+      debugPrint("Catégorie insérée avec l'id $id");
+    } on DatabaseException catch (e) {
+      if (e.isUniqueConstraintError()) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cette catégorie existe déjà')),
+        );
+      } else {
+        debugPrint('Erreur SQLite : $e');
+      }
     }
   }
 
@@ -62,8 +71,7 @@ class TestsScreen extends StatelessWidget {
   // Afficher toutes les catégories
   Future<void> afficherCategories() async {
     try {
-      final categories =
-          await CategorieDao().obtenirToutesLesCategories();
+      final categories = await CategorieDao().obtenirToutesLesCategories();
 
       for (final categorie in categories) {
         debugPrint(categorie.toString());
@@ -106,7 +114,7 @@ class TestsScreen extends StatelessWidget {
     }
   }
 
-  // Q4.11 : Tester la contrainte sur le prix
+  // Q4.11 : Tester le prix négatif
   Future<void> testerPrixNegatif() async {
     try {
       final db = await DatabaseHelper().database;
@@ -126,12 +134,56 @@ class TestsScreen extends StatelessWidget {
     }
   }
 
+  // Q5.3 : Tester la lecture des produits
+  Future<void> testerLectureProduits() async {
+    try {
+      final db = await DatabaseHelper().database;
+
+      final lignes = await db.query('produits');
+
+      debugPrint('Type du résultat : ${lignes.runtimeType}');
+      debugPrint('Résultat brut : $lignes');
+
+      if (lignes.isNotEmpty) {
+        try {
+          lignes.first['nom'] = 'Test';
+          debugPrint('La modification a été acceptée.');
+        } catch (e) {
+          debugPrint('Erreur de modification de la Map : $e');
+        }
+      } else {
+        debugPrint('Aucun produit disponible pour le test.');
+      }
+
+      final produits = await ProduitDao().lireProduits();
+
+      for (final produit in produits) {
+        debugPrint(produit.toString());
+      }
+    } catch (e) {
+      debugPrint('Erreur lecture produits : $e');
+    }
+  }
+
+  // Q5.4 : Rechercher un produit par ID
+  Future<void> testerRechercheProduit() async {
+    try {
+      final produit = await ProduitDao().obtenirProduitParId(3);
+
+      if (produit != null) {
+        debugPrint('Produit trouvé : ${produit.toString()}');
+      } else {
+        debugPrint('Aucun produit trouvé avec ID 3.');
+      }
+    } catch (e) {
+      debugPrint('Erreur recherche produit : $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tests SQLite'),
-      ),
+      appBar: AppBar(title: const Text('Tests SQLite')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -142,7 +194,7 @@ class TestsScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           ElevatedButton(
-            onPressed: testerCategorie,
+            onPressed: () => testerCategorie(context),
             child: const Text('Ajouter une catégorie'),
           ),
           const SizedBox(height: 12),
@@ -174,6 +226,29 @@ class TestsScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: testerPrixNegatif,
             child: const Text('Tester le prix négatif'),
+          ),
+          const SizedBox(height: 12),
+
+          ElevatedButton(
+            onPressed: testerLectureProduits,
+            child: const Text('Tester la lecture des produits'),
+          ),
+          const SizedBox(height: 12),
+
+          ElevatedButton(
+            onPressed: testerRechercheProduit,
+            child: const Text('Rechercher produit ID 3'),
+          ),
+          const SizedBox(height: 12),
+
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProduitsScreen()),
+              );
+            },
+            child: const Text('Ouvrir la liste des produits'),
           ),
         ],
       ),
